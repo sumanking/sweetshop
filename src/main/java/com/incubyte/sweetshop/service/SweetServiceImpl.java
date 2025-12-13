@@ -56,9 +56,9 @@ public class SweetServiceImpl implements SweetService {
     @Override
     public Sweet purchaseSweet(Long id, int quantity) {
 
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Invalid quantity");
-        }
+//        if (quantity <= 0) {
+//            throw new IllegalArgumentException("Invalid quantity");
+//        }
 
         Sweet sweet = getSweetById(id);
 
