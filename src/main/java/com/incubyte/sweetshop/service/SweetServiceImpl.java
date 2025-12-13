@@ -56,8 +56,8 @@ public class SweetServiceImpl implements SweetService {
     @Override
     public Sweet purchaseSweet(Long id, int quantity) {
         Sweet sweet = getSweetById(id);
-        if (sweet.getQuantity() < quantity)
-        	throw new IllegalArgumentException("Not enough stock available");
+//        if (sweet.getQuantity() < quantity)
+//        	throw new IllegalArgumentException("Not enough stock available");
 
 
         sweet.setQuantity(sweet.getQuantity() - quantity);
