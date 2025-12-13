@@ -55,10 +55,16 @@ public class SweetServiceImpl implements SweetService {
 
     @Override
     public Sweet purchaseSweet(Long id, int quantity) {
-        Sweet sweet = getSweetById(id);
-        if (sweet.getQuantity() < quantity)
-        	throw new IllegalArgumentException("Not enough stock available");
 
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Invalid quantity");
+        }
+
+        Sweet sweet = getSweetById(id);
+
+        if (sweet.getQuantity() < quantity) {
+            throw new IllegalArgumentException("Not enough stock available");
+        }
 
         sweet.setQuantity(sweet.getQuantity() - quantity);
         return repo.save(sweet);
@@ -66,6 +72,11 @@ public class SweetServiceImpl implements SweetService {
 
     @Override
     public Sweet restockSweet(Long id, int quantity) {
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Invalid quantity");
+        }
+
         Sweet sweet = getSweetById(id);
         sweet.setQuantity(sweet.getQuantity() + quantity);
         return repo.save(sweet);
@@ -73,12 +84,19 @@ public class SweetServiceImpl implements SweetService {
 
     @Override
     public List<Sweet> search(String name, String category, Double min, Double max) {
-        if (name != null && !name.isBlank())
+
+        if (name != null && !name.isBlank()) {
             return repo.findByNameContainingIgnoreCase(name);
-        if (category != null && !category.isBlank())
+        }
+
+        if (category != null && !category.isBlank()) {
             return repo.findByCategoryIgnoreCase(category);
-        if (min != null && max != null)
+        }
+
+        if (min != null && max != null) {
             return repo.findByPriceBetween(min, max);
+        }
+
         return repo.findAll();
     }
 }
