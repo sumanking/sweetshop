@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Admin / Owner Panel</h1>
+
+    <!-- ADD SWEET -->
+    <form method="post" action="/admin/add" enctype="multipart/form-data">
+        <input name="name" placeholder="Name" required>
+        <input name="category" placeholder="Category" required>
+        <input name="price" type="number" step="0.01" placeholder="Price" required>
+        <input name="quantity" type="number" placeholder="Quantity" required>
+
+        <!-- MUST MATCH Sweet.imageFile -->
+        <input type="file" name="imageFile" accept="image/*" required>
+
+        <button class="btn">Add Sweet</button>
+    </form>
+
+    <hr>
+
+    <!-- INVENTORY -->
+    <table>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+
+        <tr th:each="s : ${sweets}">
+            <td>
+                <img th:if="${s.imageBase64 != null}"
+                     th:src="'data:image/jpeg;base64,' + ${s.imageBase64}"
+                     width="70">
+            </td>
+
+            <td th:text="${s.name}"></td>
+            <td th:text="${s.quantity}"></td>
+
+            <td>
+                <a th:href="@{/admin/edit/{id}(id=${s.id})}">Edit</a>
+            </td>
+
+            <td>
+                <a class="delete"
+                   th:href="@{/admin/delete/{id}(id=${s.id})}">
+                    Delete
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <a href="/" class="link">Back to Home</a>
+</div>
+
+</body>
+</html>

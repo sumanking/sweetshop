@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sweet Shop Management System</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-card {
+            background: #ffffff;
+            width: 900px;
+            max-width: 95%;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .main-card h1 {
+            color: #d35400;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .main-card p {
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            width: 260px;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.25);
+        }
+
+        .card h2 {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .card a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #d35400;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .card a:hover {
+            background: #e67e22;
+        }
+
+        footer {
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h1>🍬 Sweet Shop Management System</h1>
+    <p>Manage sweets, inventory, and purchases with a simple and modern interface</p>
+
+    <div class="cards">
+
+        <!-- CUSTOMER -->
+        <div class="card">
+            <h2>Customer</h2>
+            <p>Browse sweets, view prices, and purchase your favorite items easily.</p>
+            <a th:href="@{/customer}">Enter Shop</a>
+        </div>
+
+        <!-- ADMIN -->
+        <div class="card">
+            <h2>Admin / Owner</h2>
+            <p>Add sweets, manage stock, update prices, and control inventory.</p>
+            <a th:href="@{/admin}">Admin Panel</a>
+        </div>
+
+    </div>
+
+    <footer>
+        © 2025 Sweet Shop Management System | Built with Spring Boot & Thymeleaf
+    </footer>
+</div>
+
+</body>
+</html>

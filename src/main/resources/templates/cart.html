@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Your Cart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Cart</h1>
+
+    <table>
+        <tr>
+            <th>Sweet</th>
+            <th>Qty</th>
+            <th>Price</th>
+        </tr>
+
+        <tr th:each="item : ${items}">
+            <td th:text="${item.sweet.name}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="'₹' + ${item.totalPrice}"></td>
+        </tr>
+    </table>
+
+    <h2>Total: ₹<span th:text="${total}"></span></h2>
+
+    <form method="post" action="/customer/checkout">
+        <button class="btn">Purchase All</button>
+    </form>
+
+    <a href="/customer">Continue Shopping</a>
+</div>
+
+</body>
+</html>

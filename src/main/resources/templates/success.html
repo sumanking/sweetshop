@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Purchase Successful</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container center">
+    <h1>✅ Purchase Successful</h1>
+
+    <p>You purchased <strong th:text="${name}"></strong></p>
+    <p>Total Amount: ₹<strong th:text="${amount}"></strong></p>
+
+    <a href="/customer" class="btn">Continue Shopping</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Purchase Sweet</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Purchase Sweet</h1>
+
+    <p><strong>Name:</strong> <span th:text="${sweet.name}"></span></p>
+    <p><strong>Price:</strong> ₹<span th:text="${sweet.price}"></span></p>
+    <p><strong>Available:</strong> <span th:text="${sweet.quantity}"></span></p>
+
+    <form method="post" action="/customer/buy">
+        <input type="hidden" name="id" th:value="${sweet.id}">
+        <label>Quantity</label>
+        <input type="number" name="quantity" min="1"
+               th:attr="max=${sweet.quantity}" required>
+
+        <button class="btn">Confirm Purchase</button>
+    </form>
+
+    <a href="/customer" class="link">Cancel</a>
+</div>
+
+</body>
+</html>

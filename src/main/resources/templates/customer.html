@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sweet Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>Sweet Shop</h1>
+        <a href="/customer/cart" class="btn cart-btn">View Cart</a>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <form class="search-bar" method="get" action="/customer">
+        <input name="name" placeholder="Name">
+        <input name="category" placeholder="Category">
+        <input name="min" placeholder="Min Price">
+        <input name="max" placeholder="Max Price">
+        <button class="btn">Search</button>
+    </form>
+
+    <!-- SWEETS GRID -->
+    <div class="grid">
+        <div class="card" th:each="s : ${sweets}">
+            <img th:if="${s.imageBase64 != null}"
+                 th:src="'data:image/jpeg;base64,' + ${s.imageBase64}">
+
+            <h3 th:text="${s.name}"></h3>
+            <p class="price">₹<span th:text="${s.price}"></span></p>
+
+            <form th:action="@{/customer/add-to-cart}" method="post">
+                <input type="hidden" name="sweetId" th:value="${s.id}">
+                <input type="number" name="quantity" min="1" value="1">
+                <button class="btn">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

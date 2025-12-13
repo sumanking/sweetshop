@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Sweet</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Edit Sweet</h1>
+
+    <form th:action="@{/admin/update/{id}(id=${sweet.id})}"
+          method="post" enctype="multipart/form-data">
+
+        <input name="name" th:value="${sweet.name}" required>
+        <input name="category" th:value="${sweet.category}">
+        <input name="price" th:value="${sweet.price}" required>
+        <input name="quantity" th:value="${sweet.quantity}" required>
+        <input type="file" name="imageFile">
+
+        <button class="btn">Update Sweet</button>
+    </form>
+
+    <a href="/admin" class="link">Back</a>
+</div>
+
+</body>
+</html>
