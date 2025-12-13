@@ -30,7 +30,7 @@ public class SweetServiceImpl implements SweetService {
         existing.setPrice(sweet.getPrice());
         existing.setQuantity(sweet.getQuantity());
 
-        if (sweet.getImage() != null && sweet.getImage().length > 0) {
+        if (hasImage(sweet)) {
             existing.setImage(sweet.getImage());
         }
 
@@ -53,43 +53,41 @@ public class SweetServiceImpl implements SweetService {
         return repo.findAll();
     }
 
+    // ===================== PURCHASE =====================
+
     @Override
     public Sweet purchaseSweet(Long id, int quantity) {
-
-//        if (quantity <= 0) {
-//            throw new IllegalArgumentException("Invalid quantity");
-//        }
+        validateQuantity(quantity);
 
         Sweet sweet = getSweetById(id);
-
-        if (sweet.getQuantity() < quantity) {
-            throw new IllegalArgumentException("Not enough stock available");
-        }
+        validateStockAvailability(sweet, quantity);
 
         sweet.setQuantity(sweet.getQuantity() - quantity);
         return repo.save(sweet);
     }
 
+    // ===================== RESTOCK =====================
+
     @Override
     public Sweet restockSweet(Long id, int quantity) {
-
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Invalid quantity");
-        }
+        validateQuantity(quantity);
 
         Sweet sweet = getSweetById(id);
         sweet.setQuantity(sweet.getQuantity() + quantity);
+
         return repo.save(sweet);
     }
+
+    // ===================== SEARCH =====================
 
     @Override
     public List<Sweet> search(String name, String category, Double min, Double max) {
 
-        if (name != null && !name.isBlank()) {
+        if (isNotBlank(name)) {
             return repo.findByNameContainingIgnoreCase(name);
         }
 
-        if (category != null && !category.isBlank()) {
+        if (isNotBlank(category)) {
             return repo.findByCategoryIgnoreCase(category);
         }
 
@@ -98,5 +96,27 @@ public class SweetServiceImpl implements SweetService {
         }
 
         return repo.findAll();
+    }
+
+    // ===================== VALIDATIONS =====================
+
+    private void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Invalid quantity");
+        }
+    }
+
+    private void validateStockAvailability(Sweet sweet, int quantity) {
+        if (sweet.getQuantity() < quantity) {
+            throw new IllegalArgumentException("Not enough stock available");
+        }
+    }
+
+    private boolean hasImage(Sweet sweet) {
+        return sweet.getImage() != null && sweet.getImage().length > 0;
+    }
+
+    private boolean isNotBlank(String value) {
+        return value != null && !value.isBlank();
     }
 }
