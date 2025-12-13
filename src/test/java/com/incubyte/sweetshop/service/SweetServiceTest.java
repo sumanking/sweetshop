@@ -36,7 +36,8 @@ class SweetServiceTest {
         sweet.setQuantity(10);
     }
 
-    // 🔴 RED → Define behavior
+    // ===================== ADD SWEET =====================
+
     @Test
     void shouldAddSweet() {
         when(sweetRepository.save(sweet)).thenReturn(sweet);
@@ -45,10 +46,11 @@ class SweetServiceTest {
 
         assertNotNull(result);
         assertEquals("Rasgulla", result.getName());
-        verify(sweetRepository, times(1)).save(sweet);
+        verify(sweetRepository).save(sweet);
     }
 
-    // 🔴 RED
+    // ===================== GET ALL =====================
+
     @Test
     void shouldReturnAllSweets() {
         when(sweetRepository.findAll()).thenReturn(List.of(sweet));
@@ -59,7 +61,8 @@ class SweetServiceTest {
         assertEquals("Rasgulla", sweets.get(0).getName());
     }
 
-    // 🔴 RED
+    // ===================== PURCHASE =====================
+
     @Test
     void shouldReduceQuantityWhenPurchased() {
         when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
@@ -71,15 +74,41 @@ class SweetServiceTest {
         verify(sweetRepository).save(sweet);
     }
 
-    // 🔴 RED
     @Test
     void shouldThrowExceptionIfNotEnoughStock() {
         when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
 
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,
-                        () -> sweetService.purchaseSweet(1L, 50));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.purchaseSweet(1L, 50)
+        );
 
-        assertEquals("Not enough stock available", exception.getMessage());
+        assertEquals("Not enough stock available", ex.getMessage());
+    }
+
+    // ===================== 🔴 TDD CYCLE 2 — RED =====================
+
+    @Test
+    void shouldThrowExceptionIfQuantityIsZero() {
+        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.purchaseSweet(1L, 0)
+        );
+
+        assertEquals("Invalid quantity", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfQuantityIsNegative() {
+        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.purchaseSweet(1L, -5)
+        );
+
+        assertEquals("Invalid quantity", ex.getMessage());
     }
 }
