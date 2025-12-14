@@ -11,7 +11,9 @@ public class CartService {
 
     public void addToCart(Map<Long, CartItem> cart, Sweet sweet, int quantity) {
 
-       
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Invalid quantity");
+        }
 
         int availableStock = sweet.getQuantity();
         int currentInCart = cart.containsKey(sweet.getId())
