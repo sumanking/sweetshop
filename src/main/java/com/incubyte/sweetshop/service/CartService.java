@@ -10,37 +10,29 @@ import java.util.Map;
 public class CartService {
 
     public void addToCart(Map<Long, CartItem> cart, Sweet sweet, int quantity) {
-        validateQuantity(quantity);
 
-        CartItem item = cart.get(sweet.getId());
+       
 
-        if (item == null) {
-            addNewItem(cart, sweet, quantity);
+        int availableStock = sweet.getQuantity();
+        int currentInCart = cart.containsKey(sweet.getId())
+                ? cart.get(sweet.getId()).getQuantity()
+                : 0;
+
+        if (currentInCart + quantity > availableStock) {
+            throw new IllegalArgumentException("Cannot add more than available stock");
+        }
+
+        if (cart.containsKey(sweet.getId())) {
+            cart.get(sweet.getId()).addQuantity(quantity);
         } else {
-            increaseQuantity(item, quantity);
+            cart.put(sweet.getId(), new CartItem(sweet, quantity));
         }
     }
 
     public double calculateTotal(Map<Long, CartItem> cart) {
         return cart.values()
-                   .stream()
-                   .mapToDouble(CartItem::getTotalPrice)
-                   .sum();
-    }
-
-    // ===================== HELPERS =====================
-
-    private void validateQuantity(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Invalid quantity");
-        }
-    }
-
-    private void addNewItem(Map<Long, CartItem> cart, Sweet sweet, int quantity) {
-        cart.put(sweet.getId(), new CartItem(sweet, quantity));
-    }
-
-    private void increaseQuantity(CartItem item, int quantity) {
-        item.addQuantity(quantity);
+                .stream()
+                .mapToDouble(CartItem::getTotalPrice)
+                .sum();
     }
 }
