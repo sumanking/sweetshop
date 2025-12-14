@@ -20,8 +20,10 @@ public class SweetServiceImpl implements SweetService {
 
     @Override
     public Sweet addSweet(Sweet sweet) {
+        validatePrice(sweet.getPrice());
         return repo.save(sweet);
     }
+
 
     @Override
     public Sweet updateSweet(Long id, Sweet sweet) {
