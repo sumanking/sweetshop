@@ -10,25 +10,13 @@ import java.util.Map;
 public class CartService {
 
     public void addToCart(Map<Long, CartItem> cart, Sweet sweet, int quantity) {
+        validateQuantity(quantity);
 
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Invalid quantity");
-        }
+        int alreadyInCart = getCurrentCartQuantity(cart, sweet);
+        validateStockLimit(sweet, alreadyInCart + quantity);
 
-        int availableStock = sweet.getQuantity();
-        int currentInCart = cart.containsKey(sweet.getId())
-                ? cart.get(sweet.getId()).getQuantity()
-                : 0;
-
-        if (currentInCart + quantity > availableStock) {
-            throw new IllegalArgumentException("Cannot add more than available stock");
-        }
-
-        if (cart.containsKey(sweet.getId())) {
-            cart.get(sweet.getId()).addQuantity(quantity);
-        } else {
-            cart.put(sweet.getId(), new CartItem(sweet, quantity));
-        }
+        cart.computeIfAbsent(sweet.getId(), id -> new CartItem(sweet, 0))
+            .addQuantity(quantity);
     }
 
     public double calculateTotal(Map<Long, CartItem> cart) {
@@ -36,5 +24,25 @@ public class CartService {
                 .stream()
                 .mapToDouble(CartItem::getTotalPrice)
                 .sum();
+    }
+
+    // ===== helpers =====
+
+    private void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Invalid quantity");
+        }
+    }
+
+    private int getCurrentCartQuantity(Map<Long, CartItem> cart, Sweet sweet) {
+        return cart.containsKey(sweet.getId())
+                ? cart.get(sweet.getId()).getQuantity()
+                : 0;
+    }
+
+    private void validateStockLimit(Sweet sweet, int requestedTotal) {
+        if (requestedTotal > sweet.getQuantity()) {
+            throw new IllegalArgumentException("Cannot add more than available stock");
+        }
     }
 }
