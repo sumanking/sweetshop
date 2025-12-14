@@ -1,5 +1,6 @@
 package com.incubyte.sweetshop.service;
 
+import com.incubyte.sweetshop.exception.SweetNotFoundException;
 import com.incubyte.sweetshop.model.Sweet;
 import com.incubyte.sweetshop.repository.SweetRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,12 +87,10 @@ class SweetServiceTest {
         assertEquals("Not enough stock available", ex.getMessage());
     }
 
-    // ===================== 🔴 TDD CYCLE 2 — RED =====================
+    // ===================== TDD CYCLE 2 =====================
 
     @Test
     void shouldThrowExceptionIfQuantityIsZero() {
-        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
-
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> sweetService.purchaseSweet(1L, 0)
@@ -102,13 +101,25 @@ class SweetServiceTest {
 
     @Test
     void shouldThrowExceptionIfQuantityIsNegative() {
-        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
-
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> sweetService.purchaseSweet(1L, -5)
         );
 
         assertEquals("Invalid quantity", ex.getMessage());
+    }
+
+    // ===================== TDD CYCLE 3 =====================
+
+    @Test
+    void shouldThrowExceptionWhenPurchasingNonExistingSweet() {
+        when(sweetRepository.findById(99L)).thenReturn(Optional.empty());
+
+        SweetNotFoundException ex = assertThrows(
+                SweetNotFoundException.class,
+                () -> sweetService.purchaseSweet(99L, 2)
+        );
+
+        assertTrue(ex.getMessage().contains("Sweet not found"));
     }
 }
