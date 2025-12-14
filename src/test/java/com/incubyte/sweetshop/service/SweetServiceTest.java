@@ -170,7 +170,10 @@ class SweetServiceTest {
         when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
 
         Sweet updated = new Sweet();
-        updated.setPrice(-10);
+        updated.setName("Rasgulla");   // ✅ valid name
+        updated.setCategory("Milk");
+        updated.setPrice(-10);         // ❌ invalid price
+        updated.setQuantity(5);
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
@@ -179,6 +182,7 @@ class SweetServiceTest {
 
         assertEquals("Invalid price", ex.getMessage());
     }
+
 
  // ===================== TDD CYCLE B — SWEET NAME =====================
 
