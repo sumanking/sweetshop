@@ -101,7 +101,7 @@ public class SweetServiceImpl implements SweetService {
         }
     }
     
-    private static final int MAX_RESTOCK_LIMIT = 1000;
+    private static final int MAX_RESTOCK_LIMIT = 1000;  //set the value that upto this much can stock
 
     private void validateRestockLimit(int quantity) {
         if (quantity > MAX_RESTOCK_LIMIT) {
