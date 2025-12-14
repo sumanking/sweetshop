@@ -65,7 +65,8 @@ public class SweetServiceImpl implements SweetService {
     @Override
     public Sweet restockSweet(Long id, int quantity) {
         validateQuantity(quantity);
-
+        validateRestockLimit(quantity);
+        
         Sweet sweet = getSweetById(id);
         updateStock(sweet, quantity);
 
@@ -99,6 +100,15 @@ public class SweetServiceImpl implements SweetService {
             throw new IllegalArgumentException("Invalid quantity");
         }
     }
+    
+    private static final int MAX_RESTOCK_LIMIT = 1000;
+
+    private void validateRestockLimit(int quantity) {
+        if (quantity > MAX_RESTOCK_LIMIT) {
+            throw new IllegalArgumentException("Restock limit exceeded");
+        }
+    }
+
 
     private void validateStock(Sweet sweet, int quantity) {
         if (sweet.getQuantity() < quantity) {
