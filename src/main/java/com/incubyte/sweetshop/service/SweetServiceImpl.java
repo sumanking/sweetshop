@@ -20,9 +20,11 @@ public class SweetServiceImpl implements SweetService {
 
     @Override
     public Sweet addSweet(Sweet sweet) {
+        validateName(sweet.getName());
         validatePrice(sweet.getPrice());
         return repo.save(sweet);
     }
+
 
 
     @Override
@@ -123,17 +125,36 @@ public class SweetServiceImpl implements SweetService {
     }
 
     private void copyUpdatableFields(Sweet target, Sweet source) {
-        target.setName(source.getName());
-        target.setCategory(source.getCategory());
-        validatePrice(source.getPrice());
-        target.setPrice(source.getPrice());
 
-        target.setQuantity(source.getQuantity());
+        // NAME
+        if (source.getName() != null) {
+            validateName(source.getName());   // 🔥 validate EVEN IF BLANK
+            target.setName(source.getName());
+        }
 
+        // CATEGORY
+        if (source.getCategory() != null) {
+            target.setCategory(source.getCategory());
+        }
+
+        // PRICE
+        if (source.getPrice() != 0) {
+            validatePrice(source.getPrice()); // 🔥 validate EVEN IF NEGATIVE
+            target.setPrice(source.getPrice());
+        }
+
+        // QUANTITY
+        if (source.getQuantity() != 0) {
+            target.setQuantity(source.getQuantity());
+        }
+
+        // IMAGE
         if (hasImage(source)) {
             target.setImage(source.getImage());
         }
     }
+
+
 
     private boolean hasImage(Sweet sweet) {
         return sweet.getImage() != null && sweet.getImage().length > 0;
@@ -148,5 +169,12 @@ public class SweetServiceImpl implements SweetService {
             throw new IllegalArgumentException("Invalid price");
         }
     }
+    
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Invalid sweet name");
+        }
+    }
+
 
 }
