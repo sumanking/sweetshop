@@ -10,6 +10,8 @@ import java.util.List;
 @Service
 public class SweetServiceImpl implements SweetService {
 
+    private static final int MAX_RESTOCK_LIMIT = 1000;
+
     private final SweetRepository repo;
 
     public SweetServiceImpl(SweetRepository repo) {
@@ -25,13 +27,10 @@ public class SweetServiceImpl implements SweetService {
         return repo.save(sweet);
     }
 
-
-
     @Override
     public Sweet updateSweet(Long id, Sweet sweet) {
         Sweet existing = getSweetById(id);
-
-        copyUpdatableFields(existing, sweet);
+        applyUpdates(existing, sweet);
         return repo.save(existing);
     }
 
@@ -58,9 +57,9 @@ public class SweetServiceImpl implements SweetService {
         validateQuantity(quantity);
 
         Sweet sweet = getSweetById(id);
-        validateStock(sweet, quantity);
+        validateStockAvailability(sweet, quantity);
 
-        updateStock(sweet, -quantity);
+        adjustStock(sweet, -quantity);
         return repo.save(sweet);
     }
 
@@ -70,9 +69,9 @@ public class SweetServiceImpl implements SweetService {
     public Sweet restockSweet(Long id, int quantity) {
         validateQuantity(quantity);
         validateRestockLimit(quantity);
-        
+
         Sweet sweet = getSweetById(id);
-        updateStock(sweet, quantity);
+        adjustStock(sweet, quantity);
 
         return repo.save(sweet);
     }
@@ -97,15 +96,52 @@ public class SweetServiceImpl implements SweetService {
         return repo.findAll();
     }
 
-    // ===================== HELPERS =====================
+    // ===================== UPDATE HELPERS =====================
+
+    private void applyUpdates(Sweet target, Sweet source) {
+
+        if (source.getName() != null) {
+            validateName(source.getName());
+            target.setName(source.getName());
+        }
+
+        if (source.getCategory() != null) {
+            target.setCategory(source.getCategory());
+        }
+
+        if (source.getPrice() != 0) {
+            validatePrice(source.getPrice());
+            target.setPrice(source.getPrice());
+        }
+
+        if (source.getQuantity() != 0) {
+            target.setQuantity(source.getQuantity());
+        }
+
+        if (hasImage(source)) {
+            target.setImage(source.getImage());
+        }
+    }
+
+    // ===================== VALIDATIONS =====================
 
     private void validateQuantity(int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Invalid quantity");
         }
     }
-    
-    private static final int MAX_RESTOCK_LIMIT = 1000;  //set the value that upto this much can stock
+
+    private void validatePrice(double price) {
+        if (price <= 0) {
+            throw new IllegalArgumentException("Invalid price");
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Invalid sweet name");
+        }
+    }
 
     private void validateRestockLimit(int quantity) {
         if (quantity > MAX_RESTOCK_LIMIT) {
@@ -113,48 +149,17 @@ public class SweetServiceImpl implements SweetService {
         }
     }
 
-
-    private void validateStock(Sweet sweet, int quantity) {
+    private void validateStockAvailability(Sweet sweet, int quantity) {
         if (sweet.getQuantity() < quantity) {
             throw new IllegalArgumentException("Not enough stock available");
         }
     }
 
-    private void updateStock(Sweet sweet, int delta) {
+    // ===================== UTIL =====================
+
+    private void adjustStock(Sweet sweet, int delta) {
         sweet.setQuantity(sweet.getQuantity() + delta);
     }
-
-    private void copyUpdatableFields(Sweet target, Sweet source) {
-
-        // NAME
-        if (source.getName() != null) {
-            validateName(source.getName());   // 🔥 validate EVEN IF BLANK
-            target.setName(source.getName());
-        }
-
-        // CATEGORY
-        if (source.getCategory() != null) {
-            target.setCategory(source.getCategory());
-        }
-
-        // PRICE
-        if (source.getPrice() != 0) {
-            validatePrice(source.getPrice()); // 🔥 validate EVEN IF NEGATIVE
-            target.setPrice(source.getPrice());
-        }
-
-        // QUANTITY
-        if (source.getQuantity() != 0) {
-            target.setQuantity(source.getQuantity());
-        }
-
-        // IMAGE
-        if (hasImage(source)) {
-            target.setImage(source.getImage());
-        }
-    }
-
-
 
     private boolean hasImage(Sweet sweet) {
         return sweet.getImage() != null && sweet.getImage().length > 0;
@@ -163,18 +168,4 @@ public class SweetServiceImpl implements SweetService {
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
     }
-    
-    private void validatePrice(double price) {
-        if (price <= 0) {
-            throw new IllegalArgumentException("Invalid price");
-        }
-    }
-    
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Invalid sweet name");
-        }
-    }
-
-
 }
