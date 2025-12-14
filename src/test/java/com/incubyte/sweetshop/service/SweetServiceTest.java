@@ -180,5 +180,41 @@ class SweetServiceTest {
         assertEquals("Invalid price", ex.getMessage());
     }
 
+ // ===================== TDD CYCLE B — SWEET NAME =====================
+
+    @Test
+    void shouldThrowExceptionWhenAddingSweetWithBlankName() {
+        Sweet newSweet = new Sweet();
+        newSweet.setName("   ");   // ❌ invalid
+        newSweet.setCategory("Milk");
+        newSweet.setPrice(20);
+        newSweet.setQuantity(5);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.addSweet(newSweet)
+        );
+
+        assertEquals("Invalid sweet name", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingSweetWithBlankName() {
+        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
+
+        Sweet updated = new Sweet();
+        updated.setName("");      // ❌ invalid
+        updated.setCategory("Milk");
+        updated.setPrice(30);
+        updated.setQuantity(5);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.updateSweet(1L, updated)
+        );
+
+        assertEquals("Invalid sweet name", ex.getMessage());
+    }
+
     
 }
