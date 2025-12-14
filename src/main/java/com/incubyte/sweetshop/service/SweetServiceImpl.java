@@ -16,6 +16,8 @@ public class SweetServiceImpl implements SweetService {
         this.repo = repo;
     }
 
+    // ===================== CRUD =====================
+
     @Override
     public Sweet addSweet(Sweet sweet) {
         return repo.save(sweet);
@@ -25,15 +27,7 @@ public class SweetServiceImpl implements SweetService {
     public Sweet updateSweet(Long id, Sweet sweet) {
         Sweet existing = getSweetById(id);
 
-        existing.setName(sweet.getName());
-        existing.setCategory(sweet.getCategory());
-        existing.setPrice(sweet.getPrice());
-        existing.setQuantity(sweet.getQuantity());
-
-        if (hasImage(sweet)) {
-            existing.setImage(sweet.getImage());
-        }
-
+        copyUpdatableFields(existing, sweet);
         return repo.save(existing);
     }
 
@@ -60,12 +54,11 @@ public class SweetServiceImpl implements SweetService {
         validateQuantity(quantity);
 
         Sweet sweet = getSweetById(id);
-        validateStockAvailability(sweet, quantity);
+        validateStock(sweet, quantity);
 
-        sweet.setQuantity(sweet.getQuantity() - quantity);
+        updateStock(sweet, -quantity);
         return repo.save(sweet);
     }
-
 
     // ===================== RESTOCK =====================
 
@@ -74,7 +67,7 @@ public class SweetServiceImpl implements SweetService {
         validateQuantity(quantity);
 
         Sweet sweet = getSweetById(id);
-        sweet.setQuantity(sweet.getQuantity() + quantity);
+        updateStock(sweet, quantity);
 
         return repo.save(sweet);
     }
@@ -84,11 +77,11 @@ public class SweetServiceImpl implements SweetService {
     @Override
     public List<Sweet> search(String name, String category, Double min, Double max) {
 
-        if (isNotBlank(name)) {
+        if (hasText(name)) {
             return repo.findByNameContainingIgnoreCase(name);
         }
 
-        if (isNotBlank(category)) {
+        if (hasText(category)) {
             return repo.findByCategoryIgnoreCase(category);
         }
 
@@ -99,7 +92,7 @@ public class SweetServiceImpl implements SweetService {
         return repo.findAll();
     }
 
-    // ===================== VALIDATIONS =====================
+    // ===================== HELPERS =====================
 
     private void validateQuantity(int quantity) {
         if (quantity <= 0) {
@@ -107,9 +100,24 @@ public class SweetServiceImpl implements SweetService {
         }
     }
 
-    private void validateStockAvailability(Sweet sweet, int quantity) {
+    private void validateStock(Sweet sweet, int quantity) {
         if (sweet.getQuantity() < quantity) {
             throw new IllegalArgumentException("Not enough stock available");
+        }
+    }
+
+    private void updateStock(Sweet sweet, int delta) {
+        sweet.setQuantity(sweet.getQuantity() + delta);
+    }
+
+    private void copyUpdatableFields(Sweet target, Sweet source) {
+        target.setName(source.getName());
+        target.setCategory(source.getCategory());
+        target.setPrice(source.getPrice());
+        target.setQuantity(source.getQuantity());
+
+        if (hasImage(source)) {
+            target.setImage(source.getImage());
         }
     }
 
@@ -117,7 +125,7 @@ public class SweetServiceImpl implements SweetService {
         return sweet.getImage() != null && sweet.getImage().length > 0;
     }
 
-    private boolean isNotBlank(String value) {
+    private boolean hasText(String value) {
         return value != null && !value.isBlank();
     }
 }
