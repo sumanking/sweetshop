@@ -9,33 +9,26 @@ import java.util.Map;
 @Service
 public class CartService {
 
-    // ===================== ADD TO CART =====================
-
     public void addToCart(Map<Long, CartItem> cart, Sweet sweet, int quantity) {
-
-        validateCart(cart);
-        validateSweet(sweet);
         validateQuantity(quantity);
 
-        if (cart.containsKey(sweet.getId())) {
-            cart.get(sweet.getId()).addQuantity(quantity);
+        CartItem item = cart.get(sweet.getId());
+
+        if (item == null) {
+            addNewItem(cart, sweet, quantity);
         } else {
-            cart.put(sweet.getId(), new CartItem(sweet, quantity));
+            increaseQuantity(item, quantity);
         }
     }
 
-    // ===================== TOTAL CALCULATION =====================
-
     public double calculateTotal(Map<Long, CartItem> cart) {
-        validateCart(cart);
-
         return cart.values()
                    .stream()
                    .mapToDouble(CartItem::getTotalPrice)
                    .sum();
     }
 
-    // ===================== VALIDATIONS =====================
+    // ===================== HELPERS =====================
 
     private void validateQuantity(int quantity) {
         if (quantity <= 0) {
@@ -43,15 +36,11 @@ public class CartService {
         }
     }
 
-    private void validateSweet(Sweet sweet) {
-        if (sweet == null || sweet.getId() == null) {
-            throw new IllegalArgumentException("Invalid sweet");
-        }
+    private void addNewItem(Map<Long, CartItem> cart, Sweet sweet, int quantity) {
+        cart.put(sweet.getId(), new CartItem(sweet, quantity));
     }
 
-    private void validateCart(Map<Long, CartItem> cart) {
-        if (cart == null) {
-            throw new IllegalArgumentException("Cart cannot be null");
-        }
+    private void increaseQuantity(CartItem item, int quantity) {
+        item.addQuantity(quantity);
     }
 }
