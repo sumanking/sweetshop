@@ -122,4 +122,33 @@ class SweetServiceTest {
 
         assertTrue(ex.getMessage().contains("Sweet not found"));
     }
+    
+ // ===================== TDD CYCLE 4 =====================
+    
+    @Test
+    void shouldThrowExceptionWhenRestockQuantityIsZero() {
+        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.restockSweet(1L, 0)
+        );
+
+        assertEquals("Invalid quantity", ex.getMessage());
+    }
+    
+    @Test
+    void shouldThrowExceptionIfRestockExceedsMaximumLimit() {
+        when(sweetRepository.findById(1L)).thenReturn(Optional.of(sweet));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> sweetService.restockSweet(1L, 101)
+        );
+
+        assertEquals("Restock limit exceeded", ex.getMessage());
+    }
+
+    
+    
 }
