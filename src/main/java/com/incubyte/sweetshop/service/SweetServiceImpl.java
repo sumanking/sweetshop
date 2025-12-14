@@ -123,7 +123,9 @@ public class SweetServiceImpl implements SweetService {
     private void copyUpdatableFields(Sweet target, Sweet source) {
         target.setName(source.getName());
         target.setCategory(source.getCategory());
+        validatePrice(source.getPrice());
         target.setPrice(source.getPrice());
+
         target.setQuantity(source.getQuantity());
 
         if (hasImage(source)) {
@@ -138,4 +140,11 @@ public class SweetServiceImpl implements SweetService {
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
     }
+    
+    private void validatePrice(double price) {
+        if (price <= 0) {
+            throw new IllegalArgumentException("Invalid price");
+        }
+    }
+
 }
